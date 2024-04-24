@@ -1,0 +1,33 @@
+run:
+  skip-dirs:
+    - "examples/"
+
+linters:
+  enable-all: true
+  disable:
+    - maligned
+    - golint
+    - nosnakecase
+    - deadcode
+    - exhaustivestruct
+    - scopelint
+    - ifshort
+    - structcheck
+    - varcheck
+    - interfacer
+    - gochecknoglobals
+
+linters-settings:
+  gocritic:
+    enable-all: true
+  sloglint:
+    static-msg: true
+    context-only: true
+  depguard:
+    rules:
+      main:
+        list-mode: strict
+        files:
+          - "!$all"
+        allow:
+          - $gostd
