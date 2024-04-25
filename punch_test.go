@@ -13,7 +13,7 @@ func TestPunch(t *testing.T) {
 
 	handled := make(chan bool)
 
-	p := punch.NewWithConfig(punch.Config{ //nolint:varnamelen,exhaustruct
+	p := punch.NewWithConfig(punch.Config{ //nolint:varnamelen
 		Handler: func(_ context.Context) error {
 			time.Sleep(time.Millisecond * 100)
 
