@@ -7,16 +7,14 @@ import (
 	"github.com/daxartio/punch"
 )
 
-var DefaultTimeoutConfig = TimeoutConfig{
-	Timeout: 0,
-}
-
 type TimeoutConfig struct {
 	Timeout time.Duration
 }
 
 func Timeout() punch.MiddlewareFunc {
-	return TimeoutWithConfig(DefaultTimeoutConfig)
+	return TimeoutWithConfig(TimeoutConfig{
+		Timeout: 0,
+	})
 }
 
 func TimeoutWithConfig(config TimeoutConfig) punch.MiddlewareFunc {

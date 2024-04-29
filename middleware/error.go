@@ -8,16 +8,14 @@ import (
 
 type ErrorHandler = func(error, context.Context) error
 
-var DefaultErrorConfig = ErrorConfig{
-	Handler: nil,
-}
-
 type ErrorConfig struct {
 	Handler ErrorHandler
 }
 
 func Error() punch.MiddlewareFunc {
-	return ErrorWithConfig(DefaultErrorConfig)
+	return ErrorWithConfig(ErrorConfig{
+		Handler: nil,
+	})
 }
 
 func ErrorWithConfig(config ErrorConfig) punch.MiddlewareFunc {

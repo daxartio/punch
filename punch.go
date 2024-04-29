@@ -41,6 +41,11 @@ func NewWithConfig(config Config) *Punch {
 	}
 }
 
+func (w *Punch) SetHandler(handler HandlerFunc) {
+	w.handler = handler
+	w.handlerWithMiddlewares = handler
+}
+
 func (w *Punch) Run() error {
 	w.stop = make(chan struct{})
 	w.stopped = make(chan struct{})

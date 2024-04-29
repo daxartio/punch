@@ -10,15 +10,16 @@ import (
 )
 
 func main() {
-	p := punch.NewWithConfig(punch.Config{ //nolint
-		Handler: func(_ context.Context) error {
-			fmt.Println("tick") //nolint
+	p := punch.New() //nolint
 
-			return nil
-		},
+	p.SetHandler(func(_ context.Context) error {
+		fmt.Println("tick") //nolint
+
+		return nil
 	})
-	p.Use(middleware.CronWithConfig(middleware.CronConfig{
-		Interval: time.Second,
+
+	p.Use(middleware.IntervalWithConfig(middleware.IntervalConfig{
+		Interval: func() time.Duration { return time.Second },
 	}))
 
 	_ = p.Run()

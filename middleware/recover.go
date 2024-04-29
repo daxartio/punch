@@ -58,7 +58,7 @@ func handlePanic(ctx context.Context, config RecoverConfig, errPanic *error) {
 	if r := recover(); r != nil {
 		err, ok := r.(error)
 		if !ok {
-			err = fmt.Errorf("%w: %v", ErrRecoverPanic, r)
+			err = fmt.Errorf("%w: %r", ErrRecoverPanic, r)
 		}
 
 		var (
