@@ -2,10 +2,13 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/daxartio/punch"
 )
+
+var ErrIntervalCancelled = errors.New("interval cancelled")
 
 type IntervalConfig struct {
 	Interval func() time.Duration
@@ -24,7 +27,15 @@ func IntervalWithConfig(config IntervalConfig) punch.MiddlewareFunc {
 		}
 
 		return func(ctx context.Context) error {
-			time.Sleep(config.Interval())
+			timer := time.NewTimer(config.Interval())
+
+			select {
+			case <-timer.C:
+			case <-ctx.Done():
+				timer.Stop()
+
+				return ErrIntervalCancelled
+			}
 
 			return next(ctx)
 		}

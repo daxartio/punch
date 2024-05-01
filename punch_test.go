@@ -12,6 +12,7 @@ func TestPunch(t *testing.T) {
 	t.Parallel()
 
 	handled := make(chan bool)
+	defer close(handled)
 
 	p := punch.NewWithConfig(punch.Config{ //nolint:varnamelen
 		Handler: func(_ context.Context) error {

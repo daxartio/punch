@@ -24,10 +24,10 @@ func TimeoutWithConfig(config TimeoutConfig) punch.MiddlewareFunc {
 		}
 
 		return func(ctx context.Context) error {
-			newCtx, cancel := context.WithTimeout(ctx, config.Timeout)
+			ctx, cancel := context.WithTimeout(ctx, config.Timeout)
 			defer cancel()
 
-			return next(newCtx)
+			return next(ctx)
 		}
 	}
 }

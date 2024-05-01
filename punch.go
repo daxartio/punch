@@ -82,7 +82,6 @@ func (w *Punch) Run() error {
 func (w *Punch) Shutdown(_ context.Context) error {
 	w.stopFlag.Store(true)
 	w.stop <- struct{}{}
-	<-w.stopped
 
 	return nil
 }
