@@ -28,10 +28,10 @@ import (
 )
 
 func main() {
-	p := punch.New() //nolint
+	p := punch.New()
 
-	p.SetHandler(func(_ punch.Context) error {
-		fmt.Println("tick") //nolint
+	p.SetHandler(func(ctx punch.Context) error {
+		fmt.Println("tick")
 
 		return nil
 	})
@@ -41,8 +41,8 @@ func main() {
 	}))
 
 	if err := p.Run(); err != nil {
-        panic(err.Error())
-    }
+		panic(err.Error())
+	}
 }
 
 ```
