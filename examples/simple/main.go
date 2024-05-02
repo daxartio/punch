@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -12,13 +11,13 @@ import (
 func main() {
 	p := punch.New() //nolint
 
-	p.SetHandler(func(_ context.Context) error {
+	p.SetHandler(func(_ *punch.Ctx) error {
 		fmt.Println("tick") //nolint
 
 		return nil
 	})
 
-	p.Use(middleware.IntervalWithConfig(middleware.IntervalConfig{
+	p.Use(middleware.IntervalWithConfig[*punch.Ctx](middleware.IntervalConfig{
 		Interval: func() time.Duration { return time.Second },
 	}))
 

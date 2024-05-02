@@ -30,17 +30,17 @@ type RecoverConfig struct {
 	Handler        RecoverHandler
 }
 
-func Recover() punch.MiddlewareFunc {
-	return RecoverWithConfig(DefaultRecoverConfig)
+func Recover[T punch.Context]() punch.MiddlewareFunc[T] {
+	return RecoverWithConfig[T](DefaultRecoverConfig)
 }
 
-func RecoverWithConfig(config RecoverConfig) punch.MiddlewareFunc {
-	return func(next punch.HandlerFunc) punch.HandlerFunc {
-		return func(ctx context.Context) error {
+func RecoverWithConfig[T punch.Context](config RecoverConfig) punch.MiddlewareFunc[T] {
+	return func(next punch.HandlerFunc[T]) punch.HandlerFunc[T] {
+		return func(ctx T) error {
 			var errPanic error
 
 			err := func() error {
-				defer handlePanic(ctx, config, &errPanic)
+				defer handlePanic(ctx.Context(), config, &errPanic)
 
 				return next(ctx)
 			}()

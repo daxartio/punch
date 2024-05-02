@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"errors"
 	"time"
 
@@ -14,24 +13,24 @@ type IntervalConfig struct {
 	Interval func() time.Duration
 }
 
-func Interval() punch.MiddlewareFunc {
-	return IntervalWithConfig(IntervalConfig{
+func Interval[T punch.Context]() punch.MiddlewareFunc[T] {
+	return IntervalWithConfig[T](IntervalConfig{
 		Interval: nil,
 	})
 }
 
-func IntervalWithConfig(config IntervalConfig) punch.MiddlewareFunc {
-	return func(next punch.HandlerFunc) punch.HandlerFunc {
+func IntervalWithConfig[T punch.Context](config IntervalConfig) punch.MiddlewareFunc[T] {
+	return func(next punch.HandlerFunc[T]) punch.HandlerFunc[T] {
 		if config.Interval == nil {
 			return next
 		}
 
-		return func(ctx context.Context) error {
+		return func(ctx T) error {
 			timer := time.NewTimer(config.Interval())
 
 			select {
 			case <-timer.C:
-			case <-ctx.Done():
+			case <-ctx.Context().Done():
 				timer.Stop()
 
 				return ErrIntervalCancelled
