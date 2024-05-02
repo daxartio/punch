@@ -9,9 +9,11 @@ type HandlerFunc[T Context] func(ctx T) error
 
 type MiddlewareFunc[T Context] func(next HandlerFunc[T]) HandlerFunc[T]
 
+type ContextCreator[T Context] func(ctx context.Context) T
+
 type Config[T Context] struct {
-	Handler       HandlerFunc[T]
-	CreateContext func(ctx context.Context) T
+	Handler        HandlerFunc[T]
+	ContextCreator ContextCreator[T]
 }
 
 type Punch[T Context] struct {
@@ -24,15 +26,18 @@ type Punch[T Context] struct {
 	stopFlag               *atomic.Value
 }
 
-func New() *Punch[*Ctx] {
-	return NewWithConfig(Config[*Ctx]{}) //nolint:exhaustruct
+func New() *Punch[Context] {
+	return NewWithConfig(Config[Context]{
+		Handler:        func(_ Context) error { return nil },
+		ContextCreator: NewContext,
+	})
 }
 
 func NewWithConfig[T Context](config Config[T]) *Punch[T] {
 	return &Punch[T]{
 		handler:                config.Handler,
 		handlerWithMiddlewares: config.Handler,
-		createContext:          config.CreateContext,
+		createContext:          config.ContextCreator,
 		started:                make(chan struct{}),
 		stop:                   nil,
 		stopped:                nil,

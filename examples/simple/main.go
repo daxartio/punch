@@ -11,13 +11,13 @@ import (
 func main() {
 	p := punch.New() //nolint
 
-	p.SetHandler(func(_ *punch.Ctx) error {
+	p.SetHandler(func(_ punch.Context) error {
 		fmt.Println("tick") //nolint
 
 		return nil
 	})
 
-	p.Use(middleware.IntervalWithConfig[*punch.Ctx](middleware.IntervalConfig{
+	p.Use(middleware.IntervalWithConfig[punch.Context](middleware.IntervalConfig{
 		Interval: func() time.Duration { return time.Second },
 	}))
 

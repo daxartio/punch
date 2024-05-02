@@ -7,20 +7,20 @@ type Context interface {
 	SetContext(ctx context.Context)
 }
 
-var _ Context = (*Ctx)(nil)
+var _ Context = (*baseContext)(nil)
 
-func NewCtx(ctx context.Context) *Ctx {
-	return &Ctx{ctx: ctx}
+func NewContext(ctx context.Context) Context { //nolint:ireturn
+	return &baseContext{ctx: ctx}
 }
 
-type Ctx struct {
+type baseContext struct {
 	ctx context.Context //nolint
 }
 
-func (c *Ctx) SetContext(ctx context.Context) {
+func (c *baseContext) SetContext(ctx context.Context) {
 	c.ctx = ctx
 }
 
-func (c *Ctx) Context() context.Context {
+func (c *baseContext) Context() context.Context {
 	return c.ctx
 }

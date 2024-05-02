@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -9,18 +8,21 @@ import (
 	"github.com/daxartio/punch/middleware"
 )
 
-type Config = punch.Config[*punch.Ctx]
+type (
+	Config      = punch.Config[punch.Context]
+	ErrorConfig = middleware.ErrorConfig[punch.Context]
+)
 
 var (
-	IntervalWithConfig = middleware.IntervalWithConfig[*punch.Ctx]
-	Recover            = middleware.Recover[*punch.Ctx]
-	ErrorWithConfig    = middleware.ErrorWithConfig[*punch.Ctx]
+	IntervalWithConfig = middleware.IntervalWithConfig[punch.Context]
+	Recover            = middleware.Recover[punch.Context]
+	ErrorWithConfig    = middleware.ErrorWithConfig[punch.Context]
 )
 
 func main() {
 	p := punch.NewWithConfig(Config{ //nolint
-		CreateContext: punch.NewCtx,
-		Handler: func(_ *punch.Ctx) error {
+		ContextCreator: punch.NewContext,
+		Handler: func(_ punch.Context) error {
 			fmt.Println("tick") //nolint
 			panic("test")
 		},
@@ -30,8 +32,8 @@ func main() {
 		Interval: func() time.Duration { return time.Second },
 	}))
 	p.Use(Recover())
-	p.Use(ErrorWithConfig(middleware.ErrorConfig{
-		Handler: func(err error, _ context.Context) error {
+	p.Use(ErrorWithConfig(ErrorConfig{
+		Handler: func(err error, _ punch.Context) error {
 			fmt.Println(err) //nolint
 
 			return nil

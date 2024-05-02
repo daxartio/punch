@@ -1,24 +1,22 @@
 package middleware
 
 import (
-	"context"
-
 	"github.com/daxartio/punch"
 )
 
-type ErrorHandler = func(error, context.Context) error
+type ErrorHandler[T punch.Context] func(error, T) error
 
-type ErrorConfig struct {
-	Handler ErrorHandler
+type ErrorConfig[T punch.Context] struct {
+	Handler ErrorHandler[T]
 }
 
 func Error[T punch.Context]() punch.MiddlewareFunc[T] {
-	return ErrorWithConfig[T](ErrorConfig{
+	return ErrorWithConfig[T](ErrorConfig[T]{
 		Handler: nil,
 	})
 }
 
-func ErrorWithConfig[T punch.Context](config ErrorConfig) punch.MiddlewareFunc[T] {
+func ErrorWithConfig[T punch.Context](config ErrorConfig[T]) punch.MiddlewareFunc[T] {
 	return func(next punch.HandlerFunc[T]) punch.HandlerFunc[T] {
 		if config.Handler == nil {
 			return next
@@ -26,7 +24,7 @@ func ErrorWithConfig[T punch.Context](config ErrorConfig) punch.MiddlewareFunc[T
 
 		return func(ctx T) error {
 			if err := next(ctx); err != nil {
-				return config.Handler(err, ctx.Context())
+				return config.Handler(err, ctx)
 			}
 
 			return nil

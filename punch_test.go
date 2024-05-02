@@ -14,9 +14,9 @@ func TestPunch(t *testing.T) {
 	handled := make(chan bool)
 	defer close(handled)
 
-	p := punch.NewWithConfig(punch.Config[*punch.Ctx]{ //nolint:varnamelen
-		CreateContext: punch.NewCtx,
-		Handler: func(_ *punch.Ctx) error {
+	p := punch.NewWithConfig(punch.Config[punch.Context]{ //nolint:varnamelen
+		ContextCreator: punch.NewContext,
+		Handler: func(_ punch.Context) error {
 			time.Sleep(time.Millisecond * 100)
 
 			handled <- true
@@ -24,15 +24,15 @@ func TestPunch(t *testing.T) {
 			return nil
 		},
 	})
-	p.Use(func(next punch.HandlerFunc[*punch.Ctx]) punch.HandlerFunc[*punch.Ctx] {
-		return func(ctx *punch.Ctx) error {
+	p.Use(func(next punch.HandlerFunc[punch.Context]) punch.HandlerFunc[punch.Context] {
+		return func(ctx punch.Context) error {
 			t.Log("middleware 1")
 
 			return next(ctx)
 		}
 	})
-	p.Use(func(next punch.HandlerFunc[*punch.Ctx]) punch.HandlerFunc[*punch.Ctx] {
-		return func(ctx *punch.Ctx) error {
+	p.Use(func(next punch.HandlerFunc[punch.Context]) punch.HandlerFunc[punch.Context] {
+		return func(ctx punch.Context) error {
 			t.Log("middleware 2")
 
 			return next(ctx)
