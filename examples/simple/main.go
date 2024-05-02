@@ -21,5 +21,7 @@ func main() {
 		Interval: func() time.Duration { return time.Second },
 	}))
 
-	_ = p.Run()
+	if err := p.Run(); err != nil {
+		panic(err.Error())
+	}
 }
