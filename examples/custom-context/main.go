@@ -57,6 +57,7 @@ func main() {
 	)
 
 	p.Use(MyMiddleware())
+	p.Use(middleware.Recover[Context]())
 	p.Use(middleware.IntervalWithConfig[Context](middleware.IntervalConfig{
 		Interval: func() time.Duration { return time.Second },
 	}))

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"runtime"
@@ -16,31 +15,29 @@ const (
 
 var ErrRecoverPanic = errors.New("panic")
 
-var DefaultRecoverConfig = RecoverConfig{
-	StackSize:      DefaultRecoverStackSize,
-	EnableStackAll: DefaultRecoverEnableStackAll,
-	Handler:        nil,
-}
+type RecoverHandler[T punch.Context] func(error, T, []byte)
 
-type RecoverHandler func(error, context.Context, []byte)
-
-type RecoverConfig struct {
+type RecoverConfig[T punch.Context] struct {
 	StackSize      int
 	EnableStackAll bool
-	Handler        RecoverHandler
+	Handler        RecoverHandler[T]
 }
 
 func Recover[T punch.Context]() punch.MiddlewareFunc[T] {
-	return RecoverWithConfig[T](DefaultRecoverConfig)
+	return RecoverWithConfig(RecoverConfig[T]{
+		StackSize:      DefaultRecoverStackSize,
+		EnableStackAll: DefaultRecoverEnableStackAll,
+		Handler:        nil,
+	})
 }
 
-func RecoverWithConfig[T punch.Context](config RecoverConfig) punch.MiddlewareFunc[T] {
+func RecoverWithConfig[T punch.Context](config RecoverConfig[T]) punch.MiddlewareFunc[T] {
 	return func(next punch.HandlerFunc[T]) punch.HandlerFunc[T] {
 		return func(ctx T) error {
 			var errPanic error
 
 			err := func() error {
-				defer handlePanic(ctx.Context(), config, &errPanic)
+				defer handlePanic(ctx, config, &errPanic)
 
 				return next(ctx)
 			}()
@@ -54,7 +51,7 @@ func RecoverWithConfig[T punch.Context](config RecoverConfig) punch.MiddlewareFu
 	}
 }
 
-func handlePanic(ctx context.Context, config RecoverConfig, errPanic *error) {
+func handlePanic[T punch.Context](ctx T, config RecoverConfig[T], errPanic *error) {
 	if r := recover(); r != nil {
 		err, ok := r.(error)
 		if !ok {

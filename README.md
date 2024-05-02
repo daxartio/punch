@@ -8,7 +8,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -17,17 +16,19 @@ import (
 )
 
 func main() {
-	p := punch.NewWithConfig(punch.Config{
-		Handler: func(_ context.Context) error {
-			fmt.Println("tick")
+	p := punch.New() //nolint
 
-			return nil
-		},
+	p.SetHandler(func(_ punch.Context) error {
+		fmt.Println("tick") //nolint
+
+		return nil
 	})
-	p.Use(middleware.CronWithConfig(middleware.CronConfig{
-		Interval: time.Second,
+
+	p.Use(middleware.IntervalWithConfig[punch.Context](middleware.IntervalConfig{
+		Interval: func() time.Duration { return time.Second },
 	}))
 
 	_ = p.Run()
 }
+
 ```
